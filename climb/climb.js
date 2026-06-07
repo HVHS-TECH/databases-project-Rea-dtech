@@ -71,7 +71,7 @@ class Player {
         }
 
         // reset combo
-        if (millis() - lastJumpTime > 1000) {
+        if (millis() - lastJumpTime > 1800) {
             jumpStreak = 0;
             jumpBoost = 0;
         }
@@ -105,6 +105,15 @@ class Player {
             if (score > highScore) {
                 highScore = score;
                 localStorage.setItem("highScore", highScore);
+
+                firebase.database()
+                    .ref('/climbleaderboard/' )
+                    .set({
+
+                        username: chosenName,
+                        score: highScore
+
+                    });
             }
         }
 
@@ -302,3 +311,6 @@ function keyPressed() {
         localStorage.setItem("speedUpgrade", upgrades.speed);
     }
 }
+
+
+

@@ -1,20 +1,33 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+    <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-analytics.js"></script>
+    <script src="fb_setup.js"></script>
+    <script src="firebase.js"></script>
     <title>Game assesment</title>
 </head>
+
 <body>
 
-    <h1>Game assesment </h1>
+    <h1>BIRD GAMES</h1>
+    <div class="login-area">
+        <button onclick="fb_popupLogin()">Login with Google</button>
+        <img id="profilephoto">
 
+    </div>
     <p>games</p>
-    <button 
+
     <ul>
-        <li><a href="bird.html">Bird catch fish</a></li>
-        <li><a href="game2.html">Game 2</a></li>
-        <li><a href="game3.html">Game 3</a></li>
+        <li><a href="/bird catch fish/bird.html">Bird catch fish</a></li>
+        <li><a href="/climb/climb.html">summit rush</a></li>
+        <li><a href="/game3/game3.html">in development</a></li>
     </ul>
 
 
 </body>
+
 </html>
