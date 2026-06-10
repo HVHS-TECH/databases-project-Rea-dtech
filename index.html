@@ -2,31 +2,53 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
     <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-analytics.js"></script>
     <script src="fb_setup.js"></script>
     <script src="firebase.js"></script>
-    <title>Game assesment</title>
+    <link rel="stylesheet" href="game.css">
+    <title>Game Assessment</title>
 </head>
 
 <body>
-
-    <h1>BIRD GAMES</h1>
-    <div class="login-area">
-        <button onclick="fb_popupLogin()">Login with Google</button>
-        <img id="profilephoto">
-
+    <!-- Auth Container -->
+    <div id="authContainer">
+        <h1>BIRD GAMES</h1>
+        
+        <!-- Login Form -->
+        <div id="loginForm" style="display: none;">
+            <h2>Login</h2>
+            <input type="text" id="loginName" placeholder="Name">
+            <input type="password" id="loginPassword" placeholder="Password">
+            <button onclick="loginPlayer()">Login</button>
+            <p><button onclick="toggleForms()">Don't have an account? Register</button></p>
+        </div>
+        
+        <!-- Register Form -->
+        <div id="registerForm">
+            <h2>Register</h2>
+            <input type="text" id="playerName" placeholder="Name">
+            <input type="number" id="playerAge" placeholder="Age" min="1" max="120">
+            <input type="password" id="playerPassword" placeholder="Password">
+            <button onclick="registerPlayer()">Register</button>
+            <p id="ageWarning" style="color: red; display: none;">You must be over 15 to play!</p>
+            <p><button onclick="toggleForms()">Already have an account? Login</button></p>
+        </div>
     </div>
-    <p>games</p>
 
-    <ul>
-        <li><a href="/bird catch fish/bird.html">Bird catch fish</a></li>
-        <li><a href="/climb/climb.html">summit rush</a></li>
-        <li><a href="/game3/game3.html">in development</a></li>
-    </ul>
-
+    <!-- Main Game Area -->
+    <div id="mainContainer" style="display: none;">
+        <h1>BIRD GAMES</h1>
+        <p id="playerGreeting"></p>
+        <button onclick="logout()">Logout</button>
+        
+        <ul>
+            <li><a href="bird catch fish/bird.html">Bird catch fish</a></li>
+            <li><a href="climb/climb.html">summit rush</a></li>
+            <li><a href="game3/game3.html">in development</a></li>
+        </ul>
+    </div>
 
 </body>
 

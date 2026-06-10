@@ -106,14 +106,6 @@ class Player {
                 highScore = score;
                 localStorage.setItem("highScore", highScore);
 
-                firebase.database()
-                    .ref('/climbleaderboard/' )
-                    .set({
-
-                        username: chosenName,
-                        score: highScore
-
-                    });
             }
         }
 
