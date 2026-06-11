@@ -1,126 +1,71 @@
 
 var GLOBAL_user;
+var GOOGLE_USER;
 
 console.log("Running Bird Games");
 
 
 // =========================
-// Auth Toggle Functions
+// Google Authentication
 // =========================
 
-// toggle between login and register forms
-function toggleForms() {
+// Google Sign In
+function googleSignIn() {
 
-  let loginForm = document.getElementById('loginForm');
-  let registerForm = document.getElementById('registerForm');
+  var provider = new firebase.auth.GoogleAuthProvider();
 
-  if (loginForm.style.display === 'none') {
-    loginForm.style.display = 'block';
-    registerForm.style.display = 'none';
-  } else {
-    loginForm.style.display = 'none';
-    registerForm.style.display = 'block';
-  }
+  firebase.auth()
+    .signInWithPopup(provider)
+    .then((result) => {
+
+      let googleUser = result.user;
+
+      console.log("User signed in with Google: " + googleUser.email);
+
+      // Store Google user temporarily
+      GOOGLE_USER = googleUser;
+
+      // Show additional info form
+      let googleSignInForm = document.getElementById('googleSignInForm');
+      let additionalInfoForm = document.getElementById('additionalInfoForm');
+      let googleNameDisplay = document.getElementById('googleNameDisplay');
+
+      if (googleSignInForm) googleSignInForm.style.display = 'none';
+      if (additionalInfoForm) additionalInfoForm.style.display = 'block';
+      if (googleNameDisplay) googleNameDisplay.textContent = 'Welcome, ' + (googleUser.displayName || googleUser.email.split('@')[0]) + '!';
+
+    })
+    .catch((error) => {
+
+      console.error("Google login failed:", error);
+      alert('Error signing in with Google. Please try again.');
+
+    });
 }
 
-
-// =========================
-// Login Functions
-// =========================
-
-// validate and login existing player
-async function loginPlayer() {
+// Complete registration with age and password
+async function completeRegistration() {
 
   try {
 
-    let playerName = document.getElementById('loginName').value.trim();
-    let playerPassword = document.getElementById('loginPassword').value.trim();
-
-    // validation checks
-    if (!playerName) {
-      alert('Please enter your name');
+    if (!GOOGLE_USER) {
+      alert('Please sign in with Google first');
       return;
     }
 
-    if (!playerPassword) {
-      alert('Please enter your password');
-      return;
-    }
-
-    console.log('Attempting login for: ' + playerName);
-
-    // search for user in database
-    let snapshot = await firebase.database().ref('/users/').once('value');
-    let users = snapshot.val();
-
-    if (!users) {
-      alert('No users found. Please register first.');
-      return;
-    }
-
-    // find matching user
-    let foundUser = null;
-    let userId = null;
-
-    let keys = Object.keys(users);
-
-    for (let i = 0; i < keys.length; i++) {
-
-      let user = users[keys[i]];
-
-      if (user.name === playerName && user.password === playerPassword) {
-        foundUser = user;
-        userId = keys[i];
-        break;
-      }
-    }
-
-    if (!foundUser) {
-      alert('Invalid name or password');
-      console.log('Login failed for: ' + playerName);
-      return;
-    }
-
-    console.log('Login successful for: ' + playerName);
-
-    // set global user object
-    GLOBAL_user = {
-      uid: userId,
-      name: foundUser.name,
-      age: foundUser.age
-    };
-
-    displayMainContent();
-
-  } catch (error) {
-
-    console.error('Login failed: ', error);
-    alert('Error logging in. Please try again.');
-
-  }
-}
-
-
-// =========================
-// Registration Functions
-// =========================
-
-// validate and register new player
-async function registerPlayer() {
-
-  try {
-
-    let playerName = document.getElementById('playerName').value.trim();
-    let playerAge = Number(document.getElementById('playerAge').value);
-    let playerPassword = document.getElementById('playerPassword').value.trim();
+    let playerAgeElement = document.getElementById('playerAge');
+    let playerPasswordElement = document.getElementById('playerPassword');
     let ageWarning = document.getElementById('ageWarning');
 
-    // validation checks
-    if (!playerName) {
-      alert('Please enter your name');
+    if (!playerAgeElement || !playerPasswordElement) {
+      alert('Form elements not found');
       return;
     }
 
+    let playerAge = Number(playerAgeElement.value);
+    let playerPassword = playerPasswordElement.value.trim();
+
+    // Validation
     if (isNaN(playerAge) || playerAge < 1 || playerAge > 120) {
       alert('Please enter a valid age');
       return;
@@ -131,35 +76,32 @@ async function registerPlayer() {
       return;
     }
 
-    // age restriction check
     if (playerAge <= 14) {
-      ageWarning.style.display = 'block';
+      if (ageWarning) ageWarning.style.display = 'block';
       console.log('Player age too young: ' + playerAge);
       return;
     }
 
-    ageWarning.style.display = 'none';
+    if (ageWarning) ageWarning.style.display = 'none';
 
-    let userId = 'user_' + Date.now();
+    let userId = 'google_' + GOOGLE_USER.uid;
 
-    console.log('Registering player: ' + playerName + ' (Age: ' + playerAge + ')');
+    console.log('Registering: ' + GOOGLE_USER.displayName + ' (Age: ' + playerAge + ')');
 
-    // save player data to database
+    // Save to database
     await firebase.database().ref('/users/' + userId).set({
-
-      name: playerName,
+      name: GOOGLE_USER.displayName || GOOGLE_USER.email.split('@')[0],
       age: playerAge,
       password: playerPassword,
+      email: GOOGLE_USER.email,
+      uid: GOOGLE_USER.uid,
       registeredAt: new Date().toISOString()
-
     });
 
-    console.log('Player data saved to database');
-
-    // set global user object
+    // Set global user
     GLOBAL_user = {
       uid: userId,
-      name: playerName,
+      name: GOOGLE_USER.displayName || GOOGLE_USER.email.split('@')[0],
       age: playerAge
     };
 
@@ -168,7 +110,7 @@ async function registerPlayer() {
   } catch (error) {
 
     console.error('Registration failed: ', error);
-    alert('Error registering. Please try again.');
+    alert('Error completing registration. Please try again.');
 
   }
 }
@@ -181,14 +123,25 @@ async function registerPlayer() {
 // show main game content
 function displayMainContent() {
 
-  document.getElementById('authContainer').style.display = 'none';
-  document.getElementById('mainContainer').style.display = 'block';
+  let authContainer = document.getElementById('authContainer');
+  let mainContainer = document.getElementById('mainContainer');
+
+  if (authContainer) {
+    authContainer.style.display = 'none';
+  }
+  
+  if (mainContainer) {
+    mainContainer.style.display = 'block';
+  }
 
   if (GLOBAL_user) {
 
     let greeting = 'Welcome, ' + GLOBAL_user.name + '! (Age: ' + GLOBAL_user.age + ')';
-
-    document.getElementById('playerGreeting').textContent = greeting;
+    let greetingElement = document.getElementById('playerGreeting');
+    
+    if (greetingElement) {
+      greetingElement.textContent = greeting;
+    }
 
     console.log('Displayed main content for ' + GLOBAL_user.name);
 
@@ -198,8 +151,26 @@ function displayMainContent() {
 // show login/register forms
 function displayAuthForms() {
 
-  document.getElementById('authContainer').style.display = 'block';
-  document.getElementById('mainContainer').style.display = 'none';
+  let authContainer = document.getElementById('authContainer');
+  let mainContainer = document.getElementById('mainContainer');
+  let googleSignInForm = document.getElementById('googleSignInForm');
+  let additionalInfoForm = document.getElementById('additionalInfoForm');
+
+  if (authContainer) {
+    authContainer.style.display = 'block';
+  }
+  
+  if (mainContainer) {
+    mainContainer.style.display = 'none';
+  }
+  
+  if (googleSignInForm) {
+    googleSignInForm.style.display = 'block';
+  }
+  
+  if (additionalInfoForm) {
+    additionalInfoForm.style.display = 'none';
+  }
 
   console.log('Displayed auth forms');
 
@@ -214,17 +185,17 @@ function displayAuthForms() {
 function logout() {
 
   GLOBAL_user = null;
+  GOOGLE_USER = null;
 
-  document.getElementById('loginName').value = '';
-  document.getElementById('loginPassword').value = '';
-  document.getElementById('playerName').value = '';
-  document.getElementById('playerAge').value = '';
-  document.getElementById('playerPassword').value = '';
-  document.getElementById('ageWarning').style.display = 'none';
+  let playerAge = document.getElementById('playerAge');
+  let playerPassword = document.getElementById('playerPassword');
+  let ageWarning = document.getElementById('ageWarning');
 
-  // show login form on logout
-  document.getElementById('loginForm').style.display = 'block';
-  document.getElementById('registerForm').style.display = 'none';
+  if (playerAge) playerAge.value = '';
+  if (playerPassword) playerPassword.value = '';
+  if (ageWarning) ageWarning.style.display = 'none';
+
+  firebase.auth().signOut();
 
   displayAuthForms();
 
@@ -240,40 +211,71 @@ function logout() {
 // check if user is already logged in on page load
 window.addEventListener('load', function() {
 
-  if (GLOBAL_user) {
-    displayMainContent();
-  } else {
-    displayAuthForms();
-  }
+  firebase.auth().onAuthStateChanged(async function(user) {
+    if (user) {
+      // User is authenticated with Google, find them in database
+      let snapshot = await firebase.database().ref('/users/').once('value');
+      let users = snapshot.val();
+      let foundUser = null;
+      let userId = null;
+
+      if (users) {
+        let keys = Object.keys(users);
+        for (let i = 0; i < keys.length; i++) {
+          if (users[keys[i]].uid === user.uid) {
+            foundUser = users[keys[i]];
+            userId = keys[i];
+            break;
+          }
+        }
+      }
+
+      if (foundUser) {
+        GLOBAL_user = {
+          uid: userId,
+          name: foundUser.name,
+          age: foundUser.age
+        };
+        displayMainContent();
+      } else {
+        displayAuthForms();
+      }
+    } else {
+      displayAuthForms();
+    }
+  });
 
   console.log('Page loaded');
 
 })
 
-
-async function userInfo () {
-  try {
-    if (!GLOBAL_user) {
-      alert("Please log in first");
-      return;
+function saveBirdScore(finalScore) {
+    // Check if user is logged in
+    if (!GLOBAL_user || !GLOBAL_user.uid) {
+        console.log('User not logged in, score not saved');
+        return;
     }
-
-    let uid = GLOBAL_user.uid;
-    let email = GLOBAL_user.email;
-    let profile = GLOBAL_user.photoURL;
-
-    await firebase.database()
-      .ref('/users/' + uid)
-      .set({
-        email: email,
-        uid: uid,
-        profile: profile,
-      });
-
-  } catch (error) {
-    console.error("Failed to save user info:", error);
-  }
+    
+    let scoreRef = firebase.database().ref('/birdleaderboard/' + GLOBAL_user.uid + '_bird');
+    
+    scoreRef.once('value', (snapshot) => {
+        if (snapshot.exists()) {
+            // Only update if new score is higher
+            if (finalScore > snapshot.val().score) {
+                scoreRef.set({
+                    playerName: GLOBAL_user.name,
+                    score: finalScore,
+                    date: new Date().toISOString()
+                });
+            }
+        } else {
+            // First time, save the score
+            scoreRef.set({
+                playerName: GLOBAL_user.name,
+                score: finalScore,
+                date: new Date().toISOString()
+            });
+        }
+    });
 }
-
-
 

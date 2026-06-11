@@ -57,6 +57,7 @@ function draw() {
     }
     if (score > highScore) {
     highScore = score;
+    window.parent.saveBirdScore(score);
 }
 
 
