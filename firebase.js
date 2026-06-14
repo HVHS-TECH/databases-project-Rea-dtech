@@ -1,4 +1,3 @@
-
 var GLOBAL_user;
 var GOOGLE_USER;
 
@@ -129,7 +128,7 @@ function displayMainContent() {
   if (authContainer) {
     authContainer.style.display = 'none';
   }
-  
+
   if (mainContainer) {
     mainContainer.style.display = 'block';
   }
@@ -138,7 +137,7 @@ function displayMainContent() {
 
     let greeting = 'Welcome, ' + GLOBAL_user.name + '! (Age: ' + GLOBAL_user.age + ')';
     let greetingElement = document.getElementById('playerGreeting');
-    
+
     if (greetingElement) {
       greetingElement.textContent = greeting;
     }
@@ -159,15 +158,15 @@ function displayAuthForms() {
   if (authContainer) {
     authContainer.style.display = 'block';
   }
-  
+
   if (mainContainer) {
     mainContainer.style.display = 'none';
   }
-  
+
   if (googleSignInForm) {
     googleSignInForm.style.display = 'block';
   }
-  
+
   if (additionalInfoForm) {
     additionalInfoForm.style.display = 'none';
   }
@@ -209,9 +208,9 @@ function logout() {
 // =========================
 
 // check if user is already logged in on page load
-window.addEventListener('load', function() {
+window.addEventListener('load', function () {
 
-  firebase.auth().onAuthStateChanged(async function(user) {
+  firebase.auth().onAuthStateChanged(async function (user) {
     if (user) {
       // User is authenticated with Google, find them in database
       let snapshot = await firebase.database().ref('/users/').once('value');
@@ -246,36 +245,93 @@ window.addEventListener('load', function() {
   });
 
   console.log('Page loaded');
-
+  birdLeaderboard()
 })
 
 function saveBirdScore(finalScore) {
-    // Check if user is logged in
-    if (!GLOBAL_user || !GLOBAL_user.uid) {
-        console.log('User not logged in, score not saved');
-        return;
+  // Check if user is logged in
+  if (!GLOBAL_user || !GLOBAL_user.uid) {
+    console.log('User not logged in, score not saved');
+    return;
+  }
+
+  let scoreRef = firebase.database().ref('/birdleaderboard/' + GLOBAL_user.uid + '_bird');
+
+  scoreRef.once('value', (snapshot) => {
+    if (snapshot.exists()) {
+      // Only update if new score is higher
+      if (finalScore > snapshot.val().score) {
+        scoreRef.set({
+          name: GLOBAL_user.name,
+          score: finalScore,
+          date: new Date().toISOString()
+        });
+      }
+    } else {
+      // First time, save the score
+      scoreRef.set({
+        name: GLOBAL_user.name,
+        score: finalScore,
+        date: new Date().toISOString()
+      });
     }
-    
-    let scoreRef = firebase.database().ref('/birdleaderboard/' + GLOBAL_user.uid + '_bird');
-    
-    scoreRef.once('value', (snapshot) => {
-        if (snapshot.exists()) {
-            // Only update if new score is higher
-            if (finalScore > snapshot.val().score) {
-                scoreRef.set({
-                    playerName: GLOBAL_user.name,
-                    score: finalScore,
-                    date: new Date().toISOString()
-                });
-            }
-        } else {
-            // First time, save the score
-            scoreRef.set({
-                playerName: GLOBAL_user.name,
-                score: finalScore,
-                date: new Date().toISOString()
-            });
-        }
-    });
+  });
 }
+
+function saveClimbScore(climbScore) {
+  // Check if user is logged in
+  if (!GLOBAL_user || !GLOBAL_user.uid) {
+    console.log('User not logged in, score not saved');
+    return;
+  }
+
+  let scoreRef = firebase.database().ref('/climbleaderboard/' + GLOBAL_user.uid + '_climb');
+
+  scoreRef.once('value', (snapshot) => {
+    if (snapshot.exists()) {
+      // Only update if new score is higher
+      if (climbScore > snapshot.val().score) {
+        scoreRef.set({
+          name: GLOBAL_user.name,
+          score: climbScore,
+          date: new Date().toISOString()
+        });
+      }
+    } else {
+      // First time, save the score
+      scoreRef.set({
+        name: GLOBAL_user.name,
+        score: climbScore,
+        date: new Date().toISOString()
+      });
+    }
+  });
+}
+
+
+
+async function birdLeaderboard() {
+  let snapshot = await firebase.database()
+    .ref("/birdleaderboard")
+    .once("value");
+
+  let users = snapshot.val();
+
+  if (!users) {
+    console.log("No scores found");
+    return;
+  }
+
+  let leaderboardHTML = "<h2>Leaderboard</h2>";
+  let keys = Object.keys(users);
+
+  for (let i = 0; i < keys.length; i++) {
+    let user = users[keys[i]];
+    leaderboardHTML += "<p>" + user.PlayerName + ": " + user.score + "</p>";
+  }
+
+  document.getElementById('birdleaderboard').innerHTML = leaderboardHTML;
+}
+
+
 
