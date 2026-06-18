@@ -104,8 +104,7 @@ class Player {
 
             if (score > highScore) {
                 highScore = score;
-                localStorage.setItem("highScore", highScore);
-                 window.parent.saveClimbScore(score);
+                window.parent.saveClimbScore(score);
 
             }
         }

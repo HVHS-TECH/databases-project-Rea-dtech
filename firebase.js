@@ -51,10 +51,13 @@ async function completeRegistration() {
       alert('Please sign in with Google first');
       return;
     }
-
+    let usernameElement = document.getElementById("username");
+    let username = usernameElement.value.trim();
     let playerAgeElement = document.getElementById('playerAge');
     let playerPasswordElement = document.getElementById('playerPassword');
     let ageWarning = document.getElementById('ageWarning');
+
+
 
     if (!playerAgeElement || !playerPasswordElement) {
       alert('Form elements not found');
@@ -75,11 +78,18 @@ async function completeRegistration() {
       return;
     }
 
+    if (username === "") {
+      alert("Please enter a username");
+      return;
+    }
+
     if (playerAge <= 14) {
       if (ageWarning) ageWarning.style.display = 'block';
       console.log('Player age too young: ' + playerAge);
       return;
     }
+
+
 
     if (ageWarning) ageWarning.style.display = 'none';
 
@@ -89,7 +99,7 @@ async function completeRegistration() {
 
     // Save to database
     await firebase.database().ref('/users/' + userId).set({
-      name: GOOGLE_USER.displayName || GOOGLE_USER.email.split('@')[0],
+      username: username,
       age: playerAge,
       password: playerPassword,
       email: GOOGLE_USER.email,
@@ -100,7 +110,7 @@ async function completeRegistration() {
     // Set global user
     GLOBAL_user = {
       uid: userId,
-      name: GOOGLE_USER.displayName || GOOGLE_USER.email.split('@')[0],
+      username: username,
       age: playerAge
     };
 
@@ -135,16 +145,17 @@ function displayMainContent() {
 
   if (GLOBAL_user) {
 
-    let greeting = 'Welcome, ' + GLOBAL_user.name + '! (Age: ' + GLOBAL_user.age + ')';
+    let greeting = 'Welcome, ' + GLOBAL_user.username + '! (Age: ' + GLOBAL_user.age + ')';
     let greetingElement = document.getElementById('playerGreeting');
 
     if (greetingElement) {
       greetingElement.textContent = greeting;
     }
 
-    console.log('Displayed main content for ' + GLOBAL_user.name);
+    console.log('Displayed main content for ' + GLOBAL_user.username);
 
   }
+  climbLeaderboard();
 }
 
 // show login/register forms
@@ -230,11 +241,11 @@ window.addEventListener('load', function () {
       }
 
       if (foundUser) {
-        GLOBAL_user = {
-          uid: userId,
-          name: foundUser.name,
-          age: foundUser.age
-        };
+       GLOBAL_user = {
+  uid: userId,
+  username: foundUser.username,
+  age: foundUser.age
+};
         displayMainContent();
       } else {
         displayAuthForms();
@@ -262,7 +273,7 @@ function saveBirdScore(finalScore) {
       // Only update if new score is higher
       if (finalScore > snapshot.val().score) {
         scoreRef.set({
-          name: GLOBAL_user.name,
+          username: GLOBAL_user.username,
           score: finalScore,
           date: new Date().toISOString()
         });
@@ -270,7 +281,7 @@ function saveBirdScore(finalScore) {
     } else {
       // First time, save the score
       scoreRef.set({
-        name: GLOBAL_user.name,
+       username: GLOBAL_user.username,
         score: finalScore,
         date: new Date().toISOString()
       });
@@ -278,7 +289,7 @@ function saveBirdScore(finalScore) {
   });
 }
 
-function saveClimbScore(climbScore) {
+function saveClimbScore(finalscore) {
   // Check if user is logged in
   if (!GLOBAL_user || !GLOBAL_user.uid) {
     console.log('User not logged in, score not saved');
@@ -290,10 +301,10 @@ function saveClimbScore(climbScore) {
   scoreRef.once('value', (snapshot) => {
     if (snapshot.exists()) {
       // Only update if new score is higher
-      if (climbScore > snapshot.val().score) {
+      if (finalscore > snapshot.val().score) {
         scoreRef.set({
           name: GLOBAL_user.name,
-          score: climbScore,
+          score: finalscore,
           date: new Date().toISOString()
         });
       }
@@ -301,7 +312,7 @@ function saveClimbScore(climbScore) {
       // First time, save the score
       scoreRef.set({
         name: GLOBAL_user.name,
-        score: climbScore,
+        score: finalscore,
         date: new Date().toISOString()
       });
     }
@@ -322,16 +333,42 @@ async function birdLeaderboard() {
     return;
   }
 
-  let leaderboardHTML = "<h2>Leaderboard</h2>";
+  let leaderboardHTML = "<h2> Bird catch fish leaderboard</h2>";
   let keys = Object.keys(users);
 
   for (let i = 0; i < keys.length; i++) {
     let user = users[keys[i]];
-    leaderboardHTML += "<p>" + user.PlayerName + ": " + user.score + "</p>";
+    leaderboardHTML += "<p>" + user.username + ": " + user.score + "</p>";
   }
 
   document.getElementById('birdleaderboard').innerHTML = leaderboardHTML;
 }
+
+
+
+async function climbLeaderboard() {
+  let snapshot = await firebase.database()
+    .ref("/climbleaderboard")
+    .once("value");
+
+  let users = snapshot.val();
+
+  if (!users) {
+    console.log("No scores found");
+    return;
+  }
+
+  let leaderboardHTML = "<h2> climb leaderboard</h2>";
+  let keys = Object.keys(users);
+
+  for (let i = 0; i < keys.length; i++) {
+    let user = users[keys[i]];
+    leaderboardHTML += "<p>" + user.username + ": " + user.score + "</p>";
+  }
+
+  document.getElementById('climbleaderboard').innerHTML = leaderboardHTML;
+}
+
 
 
 
