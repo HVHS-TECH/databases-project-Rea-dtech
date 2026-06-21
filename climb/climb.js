@@ -130,7 +130,7 @@ function windowResized() {
 }
 
 function startGame() {
-
+   
     score = 0;
     cameraY = 0;
 

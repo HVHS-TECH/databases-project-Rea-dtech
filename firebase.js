@@ -241,17 +241,35 @@ window.addEventListener('load', function () {
       }
 
       if (foundUser) {
-       GLOBAL_user = {
-  uid: userId,
-  username: foundUser.username,
-  age: foundUser.age
-};
+        GLOBAL_user = {
+          uid: userId,
+          username: foundUser.username,
+          age: foundUser.age
+        };
         displayMainContent();
       } else {
-        displayAuthForms();
+
+        GOOGLE_USER = user;
+
+        let googleSignInForm = document.getElementById('googleSignInForm');
+        let additionalInfoForm = document.getElementById('additionalInfoForm');
+        let googleNameDisplay = document.getElementById('googleNameDisplay');
+
+        if (googleSignInForm) {
+          googleSignInForm.style.display = 'none';
+        }
+
+        if (additionalInfoForm) {
+          additionalInfoForm.style.display = 'block';
+        }
+
+        if (googleNameDisplay) {
+          googleNameDisplay.textContent =
+            'Welcome, ' +
+            (user.displayName || user.email.split('@')[0]) +
+            '!';
+        }
       }
-    } else {
-      displayAuthForms();
     }
   });
 
@@ -281,7 +299,7 @@ function saveBirdScore(finalScore) {
     } else {
       // First time, save the score
       scoreRef.set({
-       username: GLOBAL_user.username,
+        username: GLOBAL_user.username,
         score: finalScore,
         date: new Date().toISOString()
       });
@@ -297,13 +315,13 @@ function saveClimbScore(finalscore) {
   }
 
   let scoreRef = firebase.database().ref('/climbleaderboard/' + GLOBAL_user.uid + '_climb');
-
+  console.log(GLOBAL_user);
   scoreRef.once('value', (snapshot) => {
     if (snapshot.exists()) {
       // Only update if new score is higher
       if (finalscore > snapshot.val().score) {
         scoreRef.set({
-          name: GLOBAL_user.name,
+          username: GLOBAL_user.username,
           score: finalscore,
           date: new Date().toISOString()
         });
@@ -311,10 +329,11 @@ function saveClimbScore(finalscore) {
     } else {
       // First time, save the score
       scoreRef.set({
-        name: GLOBAL_user.name,
+        username: GLOBAL_user.username,
         score: finalscore,
         date: new Date().toISOString()
       });
+
     }
   });
 }
@@ -341,7 +360,11 @@ async function birdLeaderboard() {
     leaderboardHTML += "<p>" + user.username + ": " + user.score + "</p>";
   }
 
-  document.getElementById('birdleaderboard').innerHTML = leaderboardHTML;
+  let leaderboardDiv = document.getElementById('birdleaderboard');
+
+  if (leaderboardDiv) {
+    leaderboardDiv.innerHTML = leaderboardHTML;
+  }
 }
 
 
@@ -358,17 +381,18 @@ async function climbLeaderboard() {
     return;
   }
 
-  let leaderboardHTML = "<h2> climb leaderboard</h2>";
+  let leaderboardHTML1 = "<h2> climb leaderboard</h2>";
   let keys = Object.keys(users);
 
   for (let i = 0; i < keys.length; i++) {
     let user = users[keys[i]];
-    leaderboardHTML += "<p>" + user.username + ": " + user.score + "</p>";
+    leaderboardHTML1 += "<p>" + user.username + ": " + user.score + "</p>";
   }
 
-  document.getElementById('climbleaderboard').innerHTML = leaderboardHTML;
+  let leaderboardDiv = document.getElementById('climbleaderboard');
+
+  if (leaderboardDiv) {
+    leaderboardDiv.innerHTML = leaderboardHTML1;
+  }
 }
-
-
-
 
