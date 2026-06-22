@@ -341,6 +341,7 @@ function saveClimbScore(finalscore) {
 
 
 async function birdLeaderboard() {
+
   let snapshot = await firebase.database()
     .ref("/birdleaderboard")
     .once("value");
@@ -352,15 +353,29 @@ async function birdLeaderboard() {
     return;
   }
 
-  let leaderboardHTML = "<h2> Bird catch fish leaderboard</h2>";
-  let keys = Object.keys(users);
+ 
+  let leaderboard = Object.values(users);
 
-  for (let i = 0; i < keys.length; i++) {
-    let user = users[keys[i]];
-    leaderboardHTML += "<p>" + user.username + ": " + user.score + "</p>";
+  // Sort highest -> lowest
+  leaderboard.sort((a, b) => b.score - a.score);
+
+  let leaderboardHTML = "<h2>Bird Catch Fish Leaderboard</h2>";
+
+  for (let i = 0; i < leaderboard.length; i++) {
+
+    let user = leaderboard[i];
+
+    leaderboardHTML +=
+      "<p>" +
+      (i + 1) +
+      ". " +
+      user.username +
+      ": " +
+      user.score +
+      "</p>";
   }
 
-  let leaderboardDiv = document.getElementById('birdleaderboard');
+  let leaderboardDiv = document.getElementById("birdleaderboard");
 
   if (leaderboardDiv) {
     leaderboardDiv.innerHTML = leaderboardHTML;
@@ -368,8 +383,8 @@ async function birdLeaderboard() {
 }
 
 
-
 async function climbLeaderboard() {
+
   let snapshot = await firebase.database()
     .ref("/climbleaderboard")
     .once("value");
@@ -381,18 +396,32 @@ async function climbLeaderboard() {
     return;
   }
 
-  let leaderboardHTML1 = "<h2> climb leaderboard</h2>";
-  let keys = Object.keys(users);
 
-  for (let i = 0; i < keys.length; i++) {
-    let user = users[keys[i]];
-    leaderboardHTML1 += "<p>" + user.username + ": " + user.score + "</p>";
+  let leaderboard = Object.values(users);
+
+  // Sort highest -> lowest
+  leaderboard.sort((a, b) => b.score - a.score);
+
+  let leaderboardHTML = "<h2>Climb Leaderboard</h2>";
+
+  for (let i = 0; i < leaderboard.length; i++) {
+
+    let user = leaderboard[i];
+
+    leaderboardHTML +=
+      "<p>" +
+      (i + 1) +
+      ". " +
+      user.username +
+      ": " +
+      user.score +
+      "</p>";
   }
 
-  let leaderboardDiv = document.getElementById('climbleaderboard');
+  let leaderboardDiv = document.getElementById("climbleaderboard");
 
   if (leaderboardDiv) {
-    leaderboardDiv.innerHTML = leaderboardHTML1;
+    leaderboardDiv.innerHTML = leaderboardHTML;
   }
 }
 
