@@ -1,45 +1,60 @@
 * {
-  box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  padding: 20px;
-  font-family: Arial, sans-serif;
+    font-family: Arial, sans-serif;
+    background-color: #bde7ff;
+    margin: 0;
+    padding: 20px;
+    text-align: center;
 }
 
-h1, h2 {
-  margin: 10px 0;
+#authContainer,
+#mainContainer,
+#birdLeaderboard,
+#climbLeaderboard {
+    background: white;
+    width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    border: 2px solid #333;
+    border-radius: 8px;
+}
+
+h1 {
+    color: #0066cc;
+    margin-bottom: 20px;
+}
+
+h3 {
+    margin-top: 15px;
 }
 
 input {
-  display: block;
-  width: 100%;
-  padding: 8px;
-  margin: 10px 0;
-  font-size: 1em;
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    font-size: 16px;
 }
 
 button {
-  padding: 8px 15px;
-  margin: 5px 0;
-  font-size: 1em;
-  cursor: pointer;
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    font-size: 16px;
+    cursor: pointer;
 }
 
-ul {
-  padding-left: 20px;
+button:hover {
+    background-color: #e6e6e6;
 }
 
-ul li {
-  margin: 10px 0;
+form {
+    margin: 10px 0;
 }
 
-ul a {
-  text-decoration: none;
-  color: blue;
-}
-
-ul a:hover {
-  text-decoration: underline;
+#birdLeaderboard p,
+#climbLeaderboard p {
+    margin: 5px 0;
 }
