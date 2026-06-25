@@ -263,9 +263,21 @@ function draw() {
 
     if (state === "menu") drawMenu();
     if (state === "play") drawGame();
-}
 
+    drawHomeButton();
+}
 function mousePressed() {
+
+    // Home button
+    if (
+        mouseX >= width - 120 &&
+        mouseX <= width - 20 &&
+        mouseY >= 20 &&
+        mouseY <= 60
+    ) {
+        window.location.href = "../index.html";
+        return;
+    }
 
     if (state === "menu") {
 
@@ -279,7 +291,6 @@ function mousePressed() {
         }
     }
 }
-
 function keyPressed() {
 
     if (keyCode === ESCAPE && state === "play") {
@@ -306,3 +317,25 @@ function keyPressed() {
 
 
 
+function drawHomeButton() {
+
+    if (
+        mouseX >= width - 120 &&
+        mouseX <= width - 20 &&
+        mouseY >= 20 &&
+        mouseY <= 60
+    ) {
+        fill(220);
+    } else {
+        fill(255);
+    }
+
+    stroke(0);
+    rect(width - 120, 20, 100, 40, 8);
+
+    noStroke();
+    fill(0);
+    textAlign(CENTER, CENTER);
+    textSize(20);
+    text("🏠 Home", width - 70, 40);
+}

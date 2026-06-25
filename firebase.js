@@ -51,8 +51,8 @@ async function completeRegistration() {
       alert('Please sign in with Google first');
       return;
     }
-    let usernameElement = document.getElementById("username");
-    let username = usernameElement.value.trim();
+    let userNameElement = document.getElementById("userName");
+    let userName = userNameElement.value.trim();
     let playerAgeElement = document.getElementById('playerAge');
     let playerPasswordElement = document.getElementById('playerPassword');
     let ageWarning = document.getElementById('ageWarning');
@@ -78,8 +78,8 @@ async function completeRegistration() {
       return;
     }
 
-    if (username === "") {
-      alert("Please enter a username");
+    if (userName === "") {
+      alert("Please enter a userName");
       return;
     }
 
@@ -99,7 +99,7 @@ async function completeRegistration() {
 
     // Save to database
     await firebase.database().ref('/users/' + userId).set({
-      username: username,
+      userName: userName,
       age: playerAge,
       password: playerPassword,
       email: GOOGLE_USER.email,
@@ -110,7 +110,7 @@ async function completeRegistration() {
     // Set global user
     GLOBAL_user = {
       uid: userId,
-      username: username,
+      userName: userName,
       age: playerAge
     };
 
@@ -145,14 +145,14 @@ function displayMainContent() {
 
   if (GLOBAL_user) {
 
-    let greeting = 'Welcome, ' + GLOBAL_user.username + '! (Age: ' + GLOBAL_user.age + ')';
+    let greeting = 'Welcome, ' + GLOBAL_user.userName + '! (Age: ' + GLOBAL_user.age + ')';
     let greetingElement = document.getElementById('playerGreeting');
 
     if (greetingElement) {
       greetingElement.textContent = greeting;
     }
 
-    console.log('Displayed main content for ' + GLOBAL_user.username);
+    console.log('Displayed main content for ' + GLOBAL_user.userName);
 
   }
   climbLeaderboard();
@@ -243,7 +243,7 @@ window.addEventListener('load', function () {
       if (foundUser) {
         GLOBAL_user = {
           uid: userId,
-          username: foundUser.username,
+          userName: foundUser.userName,
           age: foundUser.age
         };
         displayMainContent();
@@ -291,7 +291,7 @@ function saveBirdScore(finalScore) {
       // Only update if new score is higher
       if (finalScore > snapshot.val().score) {
         scoreRef.set({
-          username: GLOBAL_user.username,
+          userName: GLOBAL_user.userName,
           score: finalScore,
           date: new Date().toISOString()
         });
@@ -299,7 +299,7 @@ function saveBirdScore(finalScore) {
     } else {
       // First time, save the score
       scoreRef.set({
-        username: GLOBAL_user.username,
+        userName: GLOBAL_user.userName,
         score: finalScore,
         date: new Date().toISOString()
       });
@@ -321,7 +321,7 @@ function saveClimbScore(finalscore) {
       // Only update if new score is higher
       if (finalscore > snapshot.val().score) {
         scoreRef.set({
-          username: GLOBAL_user.username,
+          userName: GLOBAL_user.userName,
           score: finalscore,
           date: new Date().toISOString()
         });
@@ -329,7 +329,7 @@ function saveClimbScore(finalscore) {
     } else {
       // First time, save the score
       scoreRef.set({
-        username: GLOBAL_user.username,
+        userName: GLOBAL_user.userName,
         score: finalscore,
         date: new Date().toISOString()
       });
@@ -369,13 +369,13 @@ async function birdLeaderboard() {
       "<p>" +
       (i + 1) +
       ". " +
-      user.username +
+      user.userName +
       ": " +
       user.score +
       "</p>";
   }
 
-  let leaderboardDiv = document.getElementById("birdleaderboard");
+  let leaderboardDiv = document.getElementById("birdLeaderboard");
 
   if (leaderboardDiv) {
     leaderboardDiv.innerHTML = leaderboardHTML;
@@ -412,13 +412,13 @@ async function climbLeaderboard() {
       "<p>" +
       (i + 1) +
       ". " +
-      user.username +
+      user.userName +
       ": " +
       user.score +
       "</p>";
   }
 
-  let leaderboardDiv = document.getElementById("climbleaderboard");
+  let leaderboardDiv = document.getElementById("climbLeaderboard");
 
   if (leaderboardDiv) {
     leaderboardDiv.innerHTML = leaderboardHTML;

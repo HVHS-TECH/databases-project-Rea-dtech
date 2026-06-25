@@ -59,7 +59,7 @@ function draw() {
     highScore = score;
     window.parent.saveBirdScore(score);
 }
-
+drawHomeButton();
 
 }
 function windowResized() {
@@ -136,26 +136,60 @@ function displayGameOverScreen() {
 /* when the mouse is pressed on the start menu the gamestate is changed to play and loads all of the sprites and runs the spawnFish function and the score and lives */
 
 function mousePressed() {
+
+    // Home button
+    if (
+        mouseX >= width - 120 &&
+        mouseX <= width - 20 &&
+        mouseY >= 20 &&
+        mouseY <= 60
+    ) {
+        window.location.href = "../index.html";
+        return;
+    }
+
     if (gameState === 'start' || gameState === 'gameOver') {
 
         gameState = 'play';
         score = 0;
         lives = 3;
+
         if (seaGull) {
             seaGull.remove();
         }
+
         seaGull = new Sprite(width / 2, height / 2, 100, 100);
         spawnFish();
+
         seaGull.img = gullImg;
         seaGull.scale = 0.5;
-        seaGull.addCollider(0, 20, 50, 50)
-
+        seaGull.addCollider(0, 20, 50, 50);
     }
 }
 
 
 
+function drawHomeButton() {
+    if (
+        mouseX >= width - 120 &&
+        mouseX <= width - 20 &&
+        mouseY >= 20 &&
+        mouseY <= 60
+    ) {
+        fill(220);
+    } else {
+        fill(255);
+    }
 
+    stroke(0);
+    rect(width - 120, 20, 100, 40, 8);
+
+    noStroke();
+    fill(0);
+    textAlign(CENTER, CENTER);
+    textSize(20);
+    text("🏠 Home", width - 70, 40);
+}
 
 
 

@@ -32,7 +32,7 @@
         <div id="additionalInfoForm" style="display: none;">
             <h3>Complete Your Profile</h3>
             <p id="googleNameDisplay"></p>
-            <input type="username" id="username" placeholder="username">
+            <input type="userName" id="userName" placeholder="userName">
             <input type="number" id="playerAge" placeholder="Age" min="1" max="120">
             <input type="password" id="playerPassword" placeholder="Password">
             <button onclick="completeRegistration()">Continue</button>
@@ -47,14 +47,18 @@
         <button onclick="logout()">Logout</button>
         
         <ul>
-            <li><a href="bird catch fish/bird.html">Bird catch fish</a></li>
-            <li><a href="climb/climb.html">summit rush</a></li>
-            <li><a href="game3/game3.html">in development</a></li>
+            <form action="bird catch fish/bird.html">
+            <button type="submit">🐥bird catch fish</button>
+            </form>
+           <form action="climb/climb.html">
+            <button type="submit">⛰️summit rush</button>
+            </form>
+           
         </ul>
     </div>
 
-    <div id="birdleaderboard"></div>
-     <div id="climbleaderboard"></div>
+    <div id="birdLeaderboard"></div>
+     <div id="climbLeaderboard"></div>
 </body>
 
 </html>
