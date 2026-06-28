@@ -32,9 +32,9 @@
         <div id="additionalInfoForm" style="display: none;">
             <h3>Complete Your Profile</h3>
             <p id="googleNameDisplay"></p>
-            <input type="userName" id="userName" placeholder="userName">
-            <input type="number" id="playerAge" placeholder="Age" min="1" max="120">
-            <input type="password" id="playerPassword" placeholder="Password">
+            <input type="userName" id="userName" placeholder="userName" maxlength="50">
+            <input type="number" id="playerAge" placeholder="Age" min="1" max="120" maxlength="10">
+            <input type="password" id="playerPassword" placeholder="Password" maxlength="100">
             <button onclick="completeRegistration()">Continue</button>
             <p id="ageWarning" style="color: red; display: none;">You must be over 14 to play!</p>
         </div>
@@ -46,7 +46,7 @@
         <p id="playerGreeting"></p>
         <button onclick="logout()">Logout</button>
         
-        <ul>
+        
             <form action="bird catch fish/bird.html">
             <button type="submit">🐥bird catch fish</button>
             </form>
@@ -54,7 +54,7 @@
             <button type="submit">⛰️summit rush</button>
             </form>
            
-        </ul>
+        
     </div>
 
     <div id="birdLeaderboard"></div>
