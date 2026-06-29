@@ -284,7 +284,7 @@ function saveBirdScore(finalScore) {
     return;
   }
 
-  let scoreRef = firebase.database().ref('/birdleaderboard/' + GLOBAL_user.uid + '_bird');
+  let scoreRef = firebase.database().ref('/birdLeaderboard/' + GLOBAL_user.uid + '_bird');
 
   scoreRef.once('value', (snapshot) => {
     if (snapshot.exists()) {
@@ -314,7 +314,7 @@ function saveClimbScore(finalscore) {
     return;
   }
 
-  let scoreRef = firebase.database().ref('/climbleaderboard/' + GLOBAL_user.uid + '_climb');
+  let scoreRef = firebase.database().ref('/climbLeaderboard/' + GLOBAL_user.uid + '_climb');
   console.log(GLOBAL_user);
   scoreRef.once('value', (snapshot) => {
     if (snapshot.exists()) {
@@ -343,7 +343,7 @@ function saveClimbScore(finalscore) {
 async function birdLeaderboard() {
 
   let snapshot = await firebase.database()
-    .ref("/birdleaderboard")
+    .ref("/birdLeaderboard")
     .once("value");
 
   let users = snapshot.val();
@@ -386,7 +386,7 @@ async function birdLeaderboard() {
 async function climbLeaderboard() {
 
   let snapshot = await firebase.database()
-    .ref("/climbleaderboard")
+    .ref("/climbLeaderboard")
     .once("value");
 
   let users = snapshot.val();
