@@ -275,6 +275,7 @@ window.addEventListener('load', function () {
 
   console.log('Page loaded');
   birdLeaderboard()
+  climbLeaderboard()
 })
 
 function saveBirdScore(finalScore) {
